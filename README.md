@@ -1,1 +1,3 @@
-# 2024_1-ComputacionGrafica
+# Proyecto Computación Gráfica
+
+Requiere pygame y OpenGL
