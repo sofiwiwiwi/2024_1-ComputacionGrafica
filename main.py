@@ -13,17 +13,39 @@ def swap_textures(squares):
     for square, texture in zip(squares, textures):
         square.texture_id = texture
 
+def set_window_position(screen_number):
+    info = pygame.display.get_desktop_sizes()
+    if screen_number < len(info):
+        x_offset = info[screen_number][0] * screen_number
+        os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x_offset},0"
+
 pygame.init()
 display = (700, 700)
-pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
+fullscreen = True
+target_screen = 0 
+
+set_window_position(target_screen)
+
+info = pygame.display.get_desktop_sizes()
+if fullscreen and target_screen < len(info):
+    display = info[target_screen]
+    pygame.display.set_mode(display, DOUBLEBUF | OPENGL | FULLSCREEN)
+else:
+    display = (700, 700)
+    pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
+
 gluOrtho2D(0, display[0], 0, display[1])
 
-squares = [
-    Square(250, 50, 150,'images/image1.png'),
-    Square(250, 250, 150,'images/image2.png'),
-    Square(250, 450, 150,'images/image3.png')
-]
 
+
+square_size = display[1] * 0.3  # 20% of screen height
+x_center = (display[0] - square_size) / 2
+
+squares = [
+    Square(x_center, display[1] * 0.2 - square_size / 2, square_size, 'images/image1.png'), 
+    Square(x_center, display[1] * 0.5 - square_size / 2, square_size, 'images/image2.png'),  
+    Square(x_center, display[1] * 0.8 - square_size / 2, square_size, 'images/image3.png')   
+]
 running = True
 selected_square = None
 while running:
@@ -47,6 +69,8 @@ while running:
         elif event.type == KEYDOWN:
             if event.key == K_SPACE:
                 swap_textures(squares)
+            elif event.key == K_ESCAPE:
+                running = False
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
